@@ -297,12 +297,12 @@
     <div class="mt-20 text-center">
       <p class="text-slate-500 text-sm mb-8 font-semibold uppercase tracking-wider">Wayt is Trusted by Restaurants Like Yours</p>
       <div class="flex flex-wrap justify-center gap-4">
-        <template x-for="r in trustedBy" :key="r.name">
+        <template x-for="r in trustedBy" :key="r.id">
           <div class="flex items-center gap-2.5 bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm">
             <span class="text-lg" x-text="r.emoji"></span>
             <div class="text-left">
               <p class="text-sm font-semibold text-slate-700" x-text="r.name"></p>
-              <p class="text-xs text-yellow-500" x-text="'★'.repeat(r.stars) + ' ' + r.score"></p>
+              <p class="text-xs text-yellow-500" x-text="'★ ' + r.rating"></p>
             </div>
           </div>
         </template>
@@ -491,12 +491,7 @@ function page() {
       { title: 'Boost Revenue', desc: 'Start filling your tables faster and reduce no-shows immediately.' },
     ],
 
-    trustedBy: [
-      { emoji: '🍣', name: 'Sushi House',     stars: 5, score: '4.9' },
-      { emoji: '🔥', name: 'Grill & Chill',   stars: 5, score: '4.8' },
-      { emoji: '🌊', name: 'Ocean View Cafe',  stars: 5, score: '4.9' },
-      { emoji: '🏙️', name: 'Urban Dine',       stars: 5, score: '4.7' },
-    ],
+    trustedBy: [],
 
     mockTables: [
       { name: 'Table A1 — 12:00', status: 'Occupied' },
@@ -510,6 +505,7 @@ function page() {
         this.loadPricing(),
         this.loadTestimonials(),
         this.loadSettings(),
+        this.loadTrusted(),
       ])
     },
 
@@ -534,6 +530,14 @@ function page() {
         const res = await fetch('/api/settings')
         const json = await res.json()
         this.settings = json.data || {}
+      } catch (_) {}
+    },
+
+    async loadTrusted() {
+      try {
+        const res = await fetch('/api/trusted')
+        const json = await res.json()
+        this.trustedBy = json.data || []
       } catch (_) {}
     },
 

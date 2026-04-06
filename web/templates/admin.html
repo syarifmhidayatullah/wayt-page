@@ -270,6 +270,38 @@
         </div>
       </div>
 
+      <!-- TRUSTED TAB -->
+      <div x-show="tab === 'trusted'">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-lg font-semibold text-white">Trusted By</h2>
+          <button @click="openTrustedModal(null)" class="btn-primary px-4 py-2 rounded-xl text-sm flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Tambah Restoran
+          </button>
+        </div>
+
+        <div x-show="loadingTrusted" class="text-center py-12 text-slate-400">Memuat...</div>
+
+        <div x-show="!loadingTrusted" class="space-y-3">
+          <template x-for="t in trustedList" :key="t.id">
+            <div class="card-glass rounded-xl p-4 flex items-center gap-4">
+              <span class="text-2xl flex-shrink-0" x-text="t.emoji"></span>
+              <div class="flex-1 min-w-0">
+                <p class="font-medium text-white text-sm" x-text="t.name"></p>
+                <p class="text-yellow-400 text-xs mt-0.5" x-text="'★ ' + t.rating"></p>
+              </div>
+              <span class="text-xs px-2 py-0.5 rounded-full flex-shrink-0" :class="t.is_active ? 'badge-active' : 'badge-inactive'" x-text="t.is_active ? 'Tampil' : 'Tersembunyi'"></span>
+              <div class="flex gap-2 flex-shrink-0">
+                <button @click="openTrustedModal(t)" class="px-3 py-2 rounded-lg text-xs text-slate-300 bg-slate-800 hover:bg-slate-700 transition-colors">Edit</button>
+                <button @click="deleteTrusted(t.id)" class="px-3 py-2 rounded-lg text-xs btn-danger transition-colors">Hapus</button>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
       <!-- SETTINGS TAB -->
       <div x-show="tab === 'settings'">
         <div class="flex items-center justify-between mb-6">
@@ -452,6 +484,55 @@
     </div>
   </div>
 
+  <!-- Trusted Modal -->
+  <div x-show="trustedModal" x-transition:enter="transition ease-out duration-200" x-transition:leave="transition ease-in duration-150"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    @click.self="trustedModal = false">
+    <div class="card-glass rounded-2xl w-full max-w-sm">
+      <div class="p-6">
+        <h3 class="font-semibold text-white mb-5" x-text="trustedForm.id ? 'Edit Restoran' : 'Tambah Restoran'"></h3>
+        <form @submit.prevent="saveTrusted()" class="space-y-4">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Nama Restoran</label>
+            <input x-model="trustedForm.name" type="text" placeholder="Sushi House" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" required />
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Emoji</label>
+              <input x-model="trustedForm.emoji" type="text" placeholder="🍽️" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Rating</label>
+              <input x-model="trustedForm.rating" type="text" placeholder="4.9" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Urutan Tampil</label>
+              <input x-model.number="trustedForm.sort_order" type="number" placeholder="0" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
+            </div>
+            <label x-show="trustedForm.id" class="flex items-center gap-3 cursor-pointer mt-5">
+              <div class="relative">
+                <input x-model="trustedForm.is_active" type="checkbox" class="sr-only" />
+                <div :class="trustedForm.is_active ? 'bg-emerald-500' : 'bg-slate-700'" class="w-10 h-6 rounded-full transition-colors"></div>
+                <div :class="trustedForm.is_active ? 'translate-x-4' : 'translate-x-0'" class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform shadow"></div>
+              </div>
+              <span class="text-sm text-slate-300">Tampilkan</span>
+            </label>
+          </div>
+          <div x-show="formError" class="text-red-400 text-sm" x-text="formError"></div>
+          <div class="flex gap-3 pt-2">
+            <button type="button" @click="trustedModal = false" class="flex-1 py-2.5 rounded-xl text-sm text-slate-400 bg-slate-800 hover:bg-slate-700 transition-colors">Batal</button>
+            <button type="submit" :disabled="formLoading" class="flex-1 btn-primary py-2.5 rounded-xl text-sm disabled:opacity-60">
+              <span x-show="!formLoading">Simpan</span>
+              <span x-show="formLoading">Menyimpan...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Admin Modal -->
   <div x-show="adminModal" x-transition:enter="transition ease-out duration-200" x-transition:leave="transition ease-in duration-150"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
@@ -496,6 +577,7 @@ function admin() {
       { key: 'leads', label: 'Leads' },
       { key: 'pricing', label: 'Paket Harga' },
       { key: 'testimonials', label: 'Testimoni' },
+      { key: 'trusted', label: 'Trusted By' },
       { key: 'settings', label: 'Pengaturan' },
       { key: 'admins', label: 'Admin' },
     ],
@@ -507,6 +589,12 @@ function admin() {
     // Leads
     leadList: [],
     loadingLeads: false,
+
+    // Trusted
+    trustedList: [],
+    loadingTrusted: false,
+    trustedModal: false,
+    trustedForm: {},
 
     // Admins
     adminList: [],
@@ -580,6 +668,7 @@ function admin() {
     loadAll() {
       this.loadLeads()
       this.loadPricing()
+      this.loadTrusted()
       this.loadTestimonials()
       this.loadSettings()
       this.loadAdmins()
@@ -824,6 +913,70 @@ function admin() {
         if (res.ok) {
           this.showToast('Lead dihapus')
           this.loadLeads()
+        } else {
+          this.showToast('Gagal menghapus', 'error')
+        }
+      } catch (e) {
+        this.showToast('Koneksi gagal', 'error')
+      }
+    },
+
+    // --- TRUSTED ---
+    async loadTrusted() {
+      this.loadingTrusted = true
+      try {
+        const res = await this.apiGet('/internal/trusted')
+        if (!res) return
+        const json = await res.json()
+        this.trustedList = json.data || []
+      } catch (e) {
+        this.showToast('Gagal memuat trusted', 'error')
+      } finally {
+        this.loadingTrusted = false
+      }
+    },
+
+    openTrustedModal(t) {
+      this.formError = ''
+      if (t) {
+        this.trustedForm = { ...t }
+      } else {
+        this.trustedForm = { name: '', emoji: '🍽️', rating: '5.0', is_active: true, sort_order: 0 }
+      }
+      this.trustedModal = true
+    },
+
+    async saveTrusted() {
+      this.formLoading = true
+      this.formError = ''
+      try {
+        let res
+        if (this.trustedForm.id) {
+          res = await this.apiPut('/internal/trusted/' + this.trustedForm.id, this.trustedForm)
+        } else {
+          res = await this.apiPost('/internal/trusted', this.trustedForm)
+        }
+        if (!res) return
+        const json = await res.json()
+        if (!res.ok) { this.formError = json.message || 'Gagal menyimpan'; return }
+        this.trustedModal = false
+        this.showToast(this.trustedForm.id ? 'Restoran diupdate' : 'Restoran ditambahkan')
+        this.loadTrusted()
+      } catch (e) {
+        this.formError = 'Koneksi gagal'
+      } finally {
+        this.formLoading = false
+      }
+    },
+
+    async deleteTrusted(id) {
+      if (!confirm('Hapus restoran ini?')) return
+      try {
+        const res = await this.apiDelete('/internal/trusted/' + id)
+        if (!res) return
+        if (res.ok) {
+          this.showToast('Restoran dihapus')
+          this.loadTrusted()
         } else {
           this.showToast('Gagal menghapus', 'error')
         }

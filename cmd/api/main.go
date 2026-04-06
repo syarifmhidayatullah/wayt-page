@@ -34,6 +34,7 @@ func main() {
 	testimonialRepo := repository.NewTestimonialRepository(db)
 	settingRepo := repository.NewSettingRepository(db)
 	leadRepo := repository.NewLeadRepository(db)
+	trustedRepo := repository.NewTrustedRepository(db)
 
 	// Services
 	authSvc := service.NewAuthService(userRepo, cfg.Auth.JWTSecret)
@@ -41,6 +42,7 @@ func main() {
 	testimonialSvc := service.NewTestimonialService(testimonialRepo)
 	settingSvc := service.NewSettingService(settingRepo)
 	leadSvc := service.NewLeadService(leadRepo)
+	trustedSvc := service.NewTrustedService(trustedRepo)
 
 	// Seed admin
 	if cfg.Auth.AdminPassword != "" {
@@ -55,6 +57,7 @@ func main() {
 	testimonialHandler := handler.NewTestimonialHandler(testimonialSvc)
 	settingHandler := handler.NewSettingHandler(settingSvc)
 	leadHandler := handler.NewLeadHandler(leadSvc)
+	trustedHandler := handler.NewTrustedHandler(trustedSvc)
 
 	if cfg.AppEnv == "production" {
 		gin.SetMode(gin.ReleaseMode)
@@ -73,6 +76,7 @@ func main() {
 	r.GET("/api/testimonials", testimonialHandler.ListPublic)
 	r.GET("/api/settings", settingHandler.GetPublic)
 	r.POST("/api/leads", leadHandler.Submit)
+	r.GET("/api/trusted", trustedHandler.ListPublic)
 
 	// Internal (authenticated)
 	internal := r.Group("/internal", middleware.JWTAuth(cfg.Auth.JWTSecret))
@@ -89,6 +93,11 @@ func main() {
 
 		internal.GET("/settings", settingHandler.List)
 		internal.PUT("/settings", settingHandler.Update)
+
+		internal.GET("/trusted", trustedHandler.List)
+		internal.POST("/trusted", trustedHandler.Create)
+		internal.PUT("/trusted/:id", trustedHandler.Update)
+		internal.DELETE("/trusted/:id", trustedHandler.Delete)
 
 		internal.GET("/leads", leadHandler.List)
 		internal.DELETE("/leads/:id", leadHandler.Delete)
