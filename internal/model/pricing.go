@@ -35,4 +35,4 @@ type PricingPlan struct {
 	UpdatedAt     time.Time   `                                json:"updated_at"`
 }
 
-func (PricingPlan) TableName() string { return "wayt_pricing_plans" }
+func (PricingPlan) TableName() string { return "page_pricing_plans" }

@@ -1,5 +1,5 @@
 -- +migrate Up
-CREATE TABLE IF NOT EXISTS wayt_settings (
+CREATE TABLE IF NOT EXISTS page_settings (
     id         BIGSERIAL    PRIMARY KEY,
     key        VARCHAR(100) NOT NULL UNIQUE,
     value      TEXT         NOT NULL DEFAULT '',
@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS wayt_settings (
     updated_at TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 
-INSERT INTO wayt_settings (key, value, label) VALUES
+INSERT INTO page_settings (key, value, label) VALUES
 ('hero_title',       'Fill Your Tables Faster, Increase Your Revenue',            'Hero: Judul Utama'),
 ('hero_subtitle',    'Smart reservation & queue management system to help you maximize table utilization and boost your business efficiency.', 'Hero: Subtitle'),
 ('hero_cta',         'Get Started',                                                'Hero: Teks Tombol CTA'),
@@ -20,4 +20,4 @@ INSERT INTO wayt_settings (key, value, label) VALUES
 ('footer_whatsapp',  'Easy WhatsApp Integration',                                  'Footer: Label WhatsApp');
 
 -- +migrate Down
-DROP TABLE IF EXISTS wayt_settings;
+DROP TABLE IF EXISTS page_settings;

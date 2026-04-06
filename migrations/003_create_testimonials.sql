@@ -1,5 +1,5 @@
 -- +migrate Up
-CREATE TABLE IF NOT EXISTS wayt_testimonials (
+CREATE TABLE IF NOT EXISTS page_testimonials (
     id         BIGSERIAL    PRIMARY KEY,
     name       VARCHAR(100) NOT NULL,
     restaurant VARCHAR(150) NOT NULL,
@@ -12,10 +12,10 @@ CREATE TABLE IF NOT EXISTS wayt_testimonials (
     updated_at TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 
-INSERT INTO wayt_testimonials (name, restaurant, quote, rating, phone, sort_order) VALUES
+INSERT INTO page_testimonials (name, restaurant, quote, rating, phone, sort_order) VALUES
 ('Andi Susanto', 'Warung Sate Shinta',
  'Wayt has transformed our reservation management. More table turnovers and happier customers!',
  5, '+62 811-1234-5678', 1);
 
 -- +migrate Down
-DROP TABLE IF EXISTS wayt_testimonials;
+DROP TABLE IF EXISTS page_testimonials;

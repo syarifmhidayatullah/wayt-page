@@ -1,5 +1,5 @@
 -- +migrate Up
-CREATE TABLE IF NOT EXISTS wayt_pricing_plans (
+CREATE TABLE IF NOT EXISTS page_pricing_plans (
     id             BIGSERIAL    PRIMARY KEY,
     name           VARCHAR(100) NOT NULL,
     price_monthly  INT          NOT NULL DEFAULT 0,
@@ -12,10 +12,10 @@ CREATE TABLE IF NOT EXISTS wayt_pricing_plans (
     updated_at     TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 
-INSERT INTO wayt_pricing_plans (name, price_monthly, price_yearly, features, is_popular, sort_order) VALUES
+INSERT INTO page_pricing_plans (name, price_monthly, price_yearly, features, is_popular, sort_order) VALUES
 ('Basic',   199000, 159000, '["Reservation Management","Basic Waitlist Features","Automated Reminders","Queue Management"]', false, 1),
 ('Pro',     399000, 319000, '["Basic features plus:","Advanced Waitlist Management","Revenue Reports & Analytics"]', true, 2),
 ('Premium', 799000, 689000, '["All Pro features plus:","Custom Integration","Priority Support","Dedicated Account Manager"]', false, 3);
 
 -- +migrate Down
-DROP TABLE IF EXISTS wayt_pricing_plans;
+DROP TABLE IF EXISTS page_pricing_plans;

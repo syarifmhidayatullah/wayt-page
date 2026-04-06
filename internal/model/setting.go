@@ -10,4 +10,4 @@ type Setting struct {
 	UpdatedAt time.Time `                                json:"updated_at"`
 }
 
-func (Setting) TableName() string { return "wayt_settings" }
+func (Setting) TableName() string { return "page_settings" }

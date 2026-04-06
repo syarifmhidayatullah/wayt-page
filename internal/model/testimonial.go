@@ -15,4 +15,4 @@ type Testimonial struct {
 	UpdatedAt  time.Time `                                json:"updated_at"`
 }
 
-func (Testimonial) TableName() string { return "wayt_testimonials" }
+func (Testimonial) TableName() string { return "page_testimonials" }
