@@ -85,6 +85,11 @@ func main() {
 
 		internal.GET("/settings", settingHandler.List)
 		internal.PUT("/settings", settingHandler.Update)
+
+		internal.GET("/admins", authHandler.ListAdmins)
+		internal.POST("/admins", authHandler.CreateAdmin)
+		internal.PUT("/admins/:id/password", authHandler.UpdatePassword)
+		internal.DELETE("/admins/:id", authHandler.DeleteAdmin)
 	}
 
 	addr := fmt.Sprintf(":%s", cfg.AppPort)

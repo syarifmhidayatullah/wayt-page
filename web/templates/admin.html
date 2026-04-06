@@ -250,6 +250,37 @@
         </div>
       </div>
 
+      <!-- ADMINS TAB -->
+      <div x-show="tab === 'admins'">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-lg font-semibold text-white">Kelola Admin</h2>
+          <button @click="openAdminCreate()" class="btn-primary px-4 py-2 rounded-xl text-sm flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Tambah Admin
+          </button>
+        </div>
+
+        <div x-show="loadingAdmins" class="text-center py-12 text-slate-400">Memuat...</div>
+
+        <div x-show="!loadingAdmins" class="space-y-3">
+          <template x-for="a in adminList" :key="a.id">
+            <div class="card-glass rounded-xl p-4 flex items-center gap-4">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm" x-text="a.username.charAt(0).toUpperCase()"></div>
+              <div class="flex-1 min-w-0">
+                <p class="font-medium text-white text-sm" x-text="a.username"></p>
+                <p class="text-slate-500 text-xs" x-text="'Dibuat: ' + new Date(a.created_at).toLocaleDateString('id-ID')"></p>
+              </div>
+              <div class="flex gap-2">
+                <button @click="openAdminPassword(a)" class="px-3 py-2 rounded-lg text-xs text-slate-300 bg-slate-800 hover:bg-slate-700 transition-colors">Ganti Password</button>
+                <button @click="deleteAdmin(a.id)" class="px-3 py-2 rounded-lg text-xs btn-danger transition-colors">Hapus</button>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
     </main>
   </div>
 
@@ -375,6 +406,35 @@
     </div>
   </div>
 
+  <!-- Admin Modal -->
+  <div x-show="adminModal" x-transition:enter="transition ease-out duration-200" x-transition:leave="transition ease-in duration-150"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    @click.self="adminModal = false">
+    <div class="card-glass rounded-2xl w-full max-w-sm">
+      <div class="p-6">
+        <h3 class="font-semibold text-white mb-5" x-text="adminMode === 'create' ? 'Tambah Admin' : 'Ganti Password — ' + adminForm.username"></h3>
+        <form @submit.prevent="saveAdmin()" class="space-y-4">
+          <div x-show="adminMode === 'create'">
+            <label class="block text-xs text-slate-400 mb-1">Username</label>
+            <input x-model="adminForm.username" type="text" placeholder="admin2" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" :required="adminMode === 'create'" />
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1" x-text="adminMode === 'create' ? 'Password' : 'Password Baru'"></label>
+            <input x-model="adminForm.password" type="password" placeholder="••••••••" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" required />
+          </div>
+          <div x-show="formError" class="text-red-400 text-sm" x-text="formError"></div>
+          <div class="flex gap-3 pt-2">
+            <button type="button" @click="adminModal = false" class="flex-1 py-2.5 rounded-xl text-sm text-slate-400 bg-slate-800 hover:bg-slate-700 transition-colors">Batal</button>
+            <button type="submit" :disabled="formLoading" class="flex-1 btn-primary py-2.5 rounded-xl text-sm disabled:opacity-60">
+              <span x-show="!formLoading">Simpan</span>
+              <span x-show="formLoading">Menyimpan...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
 <script>
 function admin() {
   return {
@@ -390,11 +450,19 @@ function admin() {
       { key: 'pricing', label: 'Paket Harga' },
       { key: 'testimonials', label: 'Testimoni' },
       { key: 'settings', label: 'Pengaturan' },
+      { key: 'admins', label: 'Admin' },
     ],
 
     // Toast
     toast: '',
     toastType: 'success',
+
+    // Admins
+    adminList: [],
+    loadingAdmins: false,
+    adminModal: false,
+    adminForm: {},
+    adminMode: 'create', // 'create' | 'password'
 
     // Pricing
     pricingList: [],
@@ -462,6 +530,7 @@ function admin() {
       this.loadPricing()
       this.loadTestimonials()
       this.loadSettings()
+      this.loadAdmins()
     },
 
     showToast(msg, type = 'success') {
@@ -678,6 +747,75 @@ function admin() {
         footer_address: 'Alamat Footer',
       }
       return labels[key] || ''
+    },
+
+    // --- ADMINS ---
+    async loadAdmins() {
+      this.loadingAdmins = true
+      try {
+        const res = await this.apiGet('/internal/admins')
+        if (!res) return
+        const json = await res.json()
+        this.adminList = json.data || []
+      } catch (e) {
+        this.showToast('Gagal memuat admin', 'error')
+      } finally {
+        this.loadingAdmins = false
+      }
+    },
+
+    openAdminCreate() {
+      this.adminMode = 'create'
+      this.adminForm = { username: '', password: '' }
+      this.formError = ''
+      this.adminModal = true
+    },
+
+    openAdminPassword(a) {
+      this.adminMode = 'password'
+      this.adminForm = { id: a.id, username: a.username, password: '' }
+      this.formError = ''
+      this.adminModal = true
+    },
+
+    async saveAdmin() {
+      this.formLoading = true
+      this.formError = ''
+      try {
+        let res
+        if (this.adminMode === 'create') {
+          res = await this.apiPost('/internal/admins', { username: this.adminForm.username, password: this.adminForm.password })
+        } else {
+          res = await this.apiPut('/internal/admins/' + this.adminForm.id + '/password', { password: this.adminForm.password })
+        }
+        if (!res) return
+        const json = await res.json()
+        if (!res.ok) { this.formError = json.message || 'Gagal menyimpan'; return }
+        this.adminModal = false
+        this.showToast(this.adminMode === 'create' ? 'Admin berhasil dibuat' : 'Password diupdate')
+        this.loadAdmins()
+      } catch (e) {
+        this.formError = 'Koneksi gagal'
+      } finally {
+        this.formLoading = false
+      }
+    },
+
+    async deleteAdmin(id) {
+      if (!confirm('Hapus admin ini?')) return
+      try {
+        const res = await this.apiDelete('/internal/admins/' + id)
+        if (!res) return
+        const json = await res.json()
+        if (res.ok) {
+          this.showToast('Admin dihapus')
+          this.loadAdmins()
+        } else {
+          this.showToast(json.message || 'Gagal menghapus', 'error')
+        }
+      } catch (e) {
+        this.showToast('Koneksi gagal', 'error')
+      }
     },
 
     formatPrice(n) {
