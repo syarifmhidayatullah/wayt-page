@@ -1,0 +1,37 @@
+# Binaries
+/wayt-page
+/bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Build output
+/dist/
+/build/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Go
+vendor/
+*.test
+*.out
+coverage.txt
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

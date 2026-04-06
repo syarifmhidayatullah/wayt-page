@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wayt Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    [x-cloak] { display: none !important; }
+    .card-glass {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+    }
+    .input-dark {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      color: #e2e8f0;
+      transition: border-color 0.2s;
+    }
+    .input-dark:focus {
+      outline: none;
+      border-color: #10b981;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
+    }
+    .input-dark::placeholder { color: #64748b; }
+    .btn-primary {
+      background: linear-gradient(135deg, #10b981, #06b6d4);
+      color: white;
+      font-weight: 600;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-danger { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+    .btn-danger:hover { background: rgba(239,68,68,0.25); }
+    .tab-active {
+      background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(6,182,212,0.2));
+      border-bottom: 2px solid #10b981;
+      color: #10b981;
+    }
+    .tab-inactive { color: #94a3b8; border-bottom: 2px solid transparent; }
+    .tab-inactive:hover { color: #cbd5e1; }
+    .badge-active { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+    .badge-inactive { background: rgba(100,116,139,0.15); color: #94a3b8; border: 1px solid rgba(100,116,139,0.3); }
+    .badge-popular { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  </style>
+</head>
+<body class="h-full bg-slate-950 text-slate-200" x-data="admin()" x-init="init()" x-cloak>
+
+  <!-- Login -->
+  <div x-show="!token" class="min-h-screen flex items-center justify-center px-4">
+    <div class="card-glass rounded-2xl p-8 w-full max-w-sm">
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center gap-2 mb-3">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+          </div>
+          <span class="font-bold text-xl bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Wayt Admin</span>
+        </div>
+        <p class="text-slate-400 text-sm">Masuk ke panel internal</p>
+      </div>
+      <form @submit.prevent="login()">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm text-slate-400 mb-1">Username</label>
+            <input x-model="loginForm.username" type="text" placeholder="admin"
+              class="input-dark w-full px-4 py-3 rounded-xl text-sm" autocomplete="username" />
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-1">Password</label>
+            <input x-model="loginForm.password" type="password" placeholder="••••••••"
+              class="input-dark w-full px-4 py-3 rounded-xl text-sm" autocomplete="current-password" />
+          </div>
+          <div x-show="loginError" class="text-red-400 text-sm text-center" x-text="loginError"></div>
+          <button type="submit" :disabled="loginLoading"
+            class="btn-primary w-full py-3 rounded-xl text-sm mt-2 disabled:opacity-60">
+            <span x-show="!loginLoading">Masuk</span>
+            <span x-show="loginLoading">Memuat...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div x-show="token" class="min-h-screen flex flex-col">
+
+    <!-- Top Nav -->
+    <header class="card-glass border-b border-slate-800/50 sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center">
+            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            </svg>
+          </div>
+          <span class="font-semibold text-sm bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Wayt Admin</span>
+        </div>
+        <button @click="logout()" class="text-slate-400 hover:text-red-400 text-sm flex items-center gap-1.5 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+          </svg>
+          Keluar
+        </button>
+      </div>
+    </header>
+
+    <!-- Tabs -->
+    <div class="border-b border-slate-800/50 bg-slate-950/80 backdrop-blur sticky top-16 z-40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 flex gap-1">
+        <template x-for="t in tabs" :key="t.key">
+          <button @click="tab = t.key"
+            :class="tab === t.key ? 'tab-active' : 'tab-inactive'"
+            class="px-5 py-4 text-sm font-medium transition-all" x-text="t.label"></button>
+        </template>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-8">
+
+      <!-- Toast -->
+      <div x-show="toast" x-transition:enter="transition ease-out duration-200"
+        x-transition:leave="transition ease-in duration-150"
+        class="fixed top-20 right-4 z-50 px-5 py-3 rounded-xl text-sm font-medium shadow-xl"
+        :class="toastType === 'error' ? 'bg-red-500/90 text-white' : 'bg-emerald-500/90 text-white'"
+        x-text="toast"></div>
+
+      <!-- PRICING TAB -->
+      <div x-show="tab === 'pricing'">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-lg font-semibold text-white">Paket Harga</h2>
+          <button @click="openPricingModal(null)" class="btn-primary px-4 py-2 rounded-xl text-sm flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Tambah Paket
+          </button>
+        </div>
+
+        <div x-show="loadingPricing" class="text-center py-12 text-slate-400">Memuat...</div>
+
+        <div x-show="!loadingPricing" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <template x-for="p in pricingList" :key="p.id">
+            <div class="card-glass rounded-2xl p-5">
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <h3 class="font-semibold text-white" x-text="p.name"></h3>
+                  <p class="text-emerald-400 text-sm mt-0.5" x-text="formatPrice(p.price_monthly) + '/bln'"></p>
+                  <p class="text-slate-400 text-xs mt-0.5" x-text="formatPrice(p.price_yearly) + '/thn'"></p>
+                </div>
+                <div class="flex flex-col gap-1 items-end">
+                  <span class="text-xs px-2 py-0.5 rounded-full" :class="p.is_active ? 'badge-active' : 'badge-inactive'" x-text="p.is_active ? 'Aktif' : 'Nonaktif'"></span>
+                  <span x-show="p.is_popular" class="text-xs px-2 py-0.5 rounded-full badge-popular">Popular</span>
+                </div>
+              </div>
+              <ul class="space-y-1.5 mb-4">
+                <template x-for="f in p.features" :key="f">
+                  <li class="flex items-start gap-2 text-sm text-slate-300">
+                    <svg class="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    <span x-text="f"></span>
+                  </li>
+                </template>
+              </ul>
+              <div class="flex gap-2 pt-3 border-t border-slate-700/50">
+                <button @click="openPricingModal(p)" class="flex-1 px-3 py-2 rounded-lg text-xs text-slate-300 bg-slate-800 hover:bg-slate-700 transition-colors">Edit</button>
+                <button @click="deletePricing(p.id)" class="px-3 py-2 rounded-lg text-xs btn-danger transition-colors">Hapus</button>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- TESTIMONIALS TAB -->
+      <div x-show="tab === 'testimonials'">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-lg font-semibold text-white">Testimoni</h2>
+          <button @click="openTestimonialModal(null)" class="btn-primary px-4 py-2 rounded-xl text-sm flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Tambah Testimoni
+          </button>
+        </div>
+
+        <div x-show="loadingTestimonials" class="text-center py-12 text-slate-400">Memuat...</div>
+
+        <div x-show="!loadingTestimonials" class="space-y-3">
+          <template x-for="t in testimonialList" :key="t.id">
+            <div class="card-glass rounded-2xl p-5">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm" x-text="t.name.charAt(0)"></div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="font-medium text-white text-sm" x-text="t.name"></span>
+                    <span class="text-slate-500 text-xs" x-text="t.restaurant ? '· ' + t.restaurant : ''"></span>
+                    <span class="text-xs px-2 py-0.5 rounded-full ml-auto" :class="t.is_active ? 'badge-active' : 'badge-inactive'" x-text="t.is_active ? 'Tampil' : 'Tersembunyi'"></span>
+                  </div>
+                  <div class="flex gap-0.5 my-1">
+                    <template x-for="i in 5" :key="i">
+                      <svg class="w-3.5 h-3.5" :class="i <= t.rating ? 'text-yellow-400' : 'text-slate-600'" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                      </svg>
+                    </template>
+                  </div>
+                  <p class="text-slate-300 text-sm leading-relaxed" x-text="'&ldquo;' + t.quote + '&rdquo;'"></p>
+                </div>
+              </div>
+              <div class="flex gap-2 mt-4 pt-3 border-t border-slate-700/50">
+                <button @click="openTestimonialModal(t)" class="flex-1 px-3 py-2 rounded-lg text-xs text-slate-300 bg-slate-800 hover:bg-slate-700 transition-colors">Edit</button>
+                <button @click="deleteTestimonial(t.id)" class="px-3 py-2 rounded-lg text-xs btn-danger transition-colors">Hapus</button>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- SETTINGS TAB -->
+      <div x-show="tab === 'settings'">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-lg font-semibold text-white">Pengaturan</h2>
+          <button @click="saveAllSettings()" :disabled="savingSettings" class="btn-primary px-4 py-2 rounded-xl text-sm disabled:opacity-60">
+            <span x-show="!savingSettings">Simpan Semua</span>
+            <span x-show="savingSettings">Menyimpan...</span>
+          </button>
+        </div>
+
+        <div x-show="loadingSettings" class="text-center py-12 text-slate-400">Memuat...</div>
+
+        <div x-show="!loadingSettings" class="space-y-3">
+          <template x-for="s in settingList" :key="s.id">
+            <div class="card-glass rounded-xl p-4 flex items-center gap-4">
+              <div class="min-w-0 flex-shrink-0 w-48">
+                <span class="text-xs font-mono text-cyan-400" x-text="s.key"></span>
+                <p class="text-xs text-slate-500 mt-0.5" x-text="settingLabel(s.key)"></p>
+              </div>
+              <input x-model="s.value" type="text" :placeholder="'Nilai untuk ' + s.key"
+                class="input-dark flex-1 px-3 py-2 rounded-lg text-sm" />
+            </div>
+          </template>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Pricing Modal -->
+  <div x-show="pricingModal" x-transition:enter="transition ease-out duration-200" x-transition:leave="transition ease-in duration-150"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    @click.self="pricingModal = false">
+    <div class="card-glass rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div class="p-6">
+        <h3 class="font-semibold text-white mb-5" x-text="pricingForm.id ? 'Edit Paket' : 'Tambah Paket'"></h3>
+        <form @submit.prevent="savePricing()" class="space-y-4">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Nama Paket</label>
+            <input x-model="pricingForm.name" type="text" placeholder="Basic" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" required />
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Harga Bulanan (Rp)</label>
+              <input x-model.number="pricingForm.price_monthly" type="number" placeholder="199000" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Harga Tahunan (Rp)</label>
+              <input x-model.number="pricingForm.price_yearly" type="number" placeholder="1990000" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Fitur (satu per baris)</label>
+            <textarea x-model="pricingFeaturesText" rows="5" placeholder="Manajemen meja&#10;Booking online&#10;Laporan harian"
+              class="input-dark w-full px-3 py-2.5 rounded-xl text-sm resize-none"></textarea>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <div class="relative">
+                <input x-model="pricingForm.is_popular" type="checkbox" class="sr-only" />
+                <div :class="pricingForm.is_popular ? 'bg-emerald-500' : 'bg-slate-700'" class="w-10 h-6 rounded-full transition-colors"></div>
+                <div :class="pricingForm.is_popular ? 'translate-x-4' : 'translate-x-0'" class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform shadow"></div>
+              </div>
+              <span class="text-sm text-slate-300">Popular</span>
+            </label>
+            <label x-show="pricingForm.id" class="flex items-center gap-3 cursor-pointer">
+              <div class="relative">
+                <input x-model="pricingForm.is_active" type="checkbox" class="sr-only" />
+                <div :class="pricingForm.is_active ? 'bg-emerald-500' : 'bg-slate-700'" class="w-10 h-6 rounded-full transition-colors"></div>
+                <div :class="pricingForm.is_active ? 'translate-x-4' : 'translate-x-0'" class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform shadow"></div>
+              </div>
+              <span class="text-sm text-slate-300">Aktif</span>
+            </label>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Urutan Tampil</label>
+            <input x-model.number="pricingForm.sort_order" type="number" placeholder="0" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
+          </div>
+          <div x-show="formError" class="text-red-400 text-sm" x-text="formError"></div>
+          <div class="flex gap-3 pt-2">
+            <button type="button" @click="pricingModal = false" class="flex-1 py-2.5 rounded-xl text-sm text-slate-400 bg-slate-800 hover:bg-slate-700 transition-colors">Batal</button>
+            <button type="submit" :disabled="formLoading" class="flex-1 btn-primary py-2.5 rounded-xl text-sm disabled:opacity-60">
+              <span x-show="!formLoading">Simpan</span>
+              <span x-show="formLoading">Menyimpan...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Testimonial Modal -->
+  <div x-show="testimonialModal" x-transition:enter="transition ease-out duration-200" x-transition:leave="transition ease-in duration-150"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    @click.self="testimonialModal = false">
+    <div class="card-glass rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div class="p-6">
+        <h3 class="font-semibold text-white mb-5" x-text="testimonialForm.id ? 'Edit Testimoni' : 'Tambah Testimoni'"></h3>
+        <form @submit.prevent="saveTestimonial()" class="space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Nama</label>
+              <input x-model="testimonialForm.name" type="text" placeholder="Andi Susanto" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" required />
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Restoran</label>
+              <input x-model="testimonialForm.restaurant" type="text" placeholder="Warung Makan ABC" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Kutipan</label>
+            <textarea x-model="testimonialForm.quote" rows="3" placeholder="Aplikasinya sangat membantu..."
+              class="input-dark w-full px-3 py-2.5 rounded-xl text-sm resize-none" required></textarea>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">No. HP (opsional)</label>
+              <input x-model="testimonialForm.phone" type="text" placeholder="08123..." class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Rating (1–5)</label>
+              <input x-model.number="testimonialForm.rating" type="number" min="1" max="5" placeholder="5" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Urutan Tampil</label>
+              <input x-model.number="testimonialForm.sort_order" type="number" placeholder="0" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
+            </div>
+            <label x-show="testimonialForm.id" class="flex items-center gap-3 cursor-pointer mt-5">
+              <div class="relative">
+                <input x-model="testimonialForm.is_active" type="checkbox" class="sr-only" />
+                <div :class="testimonialForm.is_active ? 'bg-emerald-500' : 'bg-slate-700'" class="w-10 h-6 rounded-full transition-colors"></div>
+                <div :class="testimonialForm.is_active ? 'translate-x-4' : 'translate-x-0'" class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform shadow"></div>
+              </div>
+              <span class="text-sm text-slate-300">Tampilkan</span>
+            </label>
+          </div>
+          <div x-show="formError" class="text-red-400 text-sm" x-text="formError"></div>
+          <div class="flex gap-3 pt-2">
+            <button type="button" @click="testimonialModal = false" class="flex-1 py-2.5 rounded-xl text-sm text-slate-400 bg-slate-800 hover:bg-slate-700 transition-colors">Batal</button>
+            <button type="submit" :disabled="formLoading" class="flex-1 btn-primary py-2.5 rounded-xl text-sm disabled:opacity-60">
+              <span x-show="!formLoading">Simpan</span>
+              <span x-show="formLoading">Menyimpan...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<script>
+function admin() {
+  return {
+    // Auth
+    token: localStorage.getItem('wayt_admin_token') || '',
+    loginForm: { username: '', password: '' },
+    loginLoading: false,
+    loginError: '',
+
+    // Navigation
+    tab: 'pricing',
+    tabs: [
+      { key: 'pricing', label: 'Paket Harga' },
+      { key: 'testimonials', label: 'Testimoni' },
+      { key: 'settings', label: 'Pengaturan' },
+    ],
+
+    // Toast
+    toast: '',
+    toastType: 'success',
+
+    // Pricing
+    pricingList: [],
+    loadingPricing: false,
+    pricingModal: false,
+    pricingForm: {},
+    pricingFeaturesText: '',
+
+    // Testimonials
+    testimonialList: [],
+    loadingTestimonials: false,
+    testimonialModal: false,
+    testimonialForm: {},
+
+    // Settings
+    settingList: [],
+    loadingSettings: false,
+    savingSettings: false,
+
+    // Form shared
+    formLoading: false,
+    formError: '',
+
+    async init() {
+      if (this.token) {
+        this.loadAll()
+      }
+    },
+
+    async login() {
+      this.loginLoading = true
+      this.loginError = ''
+      try {
+        const res = await fetch('/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(this.loginForm),
+        })
+        const json = await res.json()
+        if (!res.ok) {
+          this.loginError = json.message || 'Login gagal'
+          return
+        }
+        this.token = json.data.token
+        localStorage.setItem('wayt_admin_token', this.token)
+        this.loginForm = { username: '', password: '' }
+        this.loadAll()
+      } catch (e) {
+        this.loginError = 'Koneksi gagal'
+      } finally {
+        this.loginLoading = false
+      }
+    },
+
+    logout() {
+      this.token = ''
+      localStorage.removeItem('wayt_admin_token')
+      this.tab = 'pricing'
+      this.pricingList = []
+      this.testimonialList = []
+      this.settingList = []
+    },
+
+    loadAll() {
+      this.loadPricing()
+      this.loadTestimonials()
+      this.loadSettings()
+    },
+
+    showToast(msg, type = 'success') {
+      this.toast = msg
+      this.toastType = type
+      setTimeout(() => { this.toast = '' }, 3000)
+    },
+
+    authHeaders() {
+      return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.token }
+    },
+
+    async apiGet(url) {
+      const res = await fetch(url, { headers: this.authHeaders() })
+      if (res.status === 401) { this.logout(); return null }
+      return res
+    },
+
+    async apiPost(url, body) {
+      const res = await fetch(url, { method: 'POST', headers: this.authHeaders(), body: JSON.stringify(body) })
+      if (res.status === 401) { this.logout(); return null }
+      return res
+    },
+
+    async apiPut(url, body) {
+      const res = await fetch(url, { method: 'PUT', headers: this.authHeaders(), body: JSON.stringify(body) })
+      if (res.status === 401) { this.logout(); return null }
+      return res
+    },
+
+    async apiDelete(url) {
+      const res = await fetch(url, { method: 'DELETE', headers: this.authHeaders() })
+      if (res.status === 401) { this.logout(); return null }
+      return res
+    },
+
+    // --- PRICING ---
+    async loadPricing() {
+      this.loadingPricing = true
+      try {
+        const res = await this.apiGet('/internal/pricing')
+        if (!res) return
+        const json = await res.json()
+        this.pricingList = json.data || []
+      } catch (e) {
+        this.showToast('Gagal memuat paket', 'error')
+      } finally {
+        this.loadingPricing = false
+      }
+    },
+
+    openPricingModal(p) {
+      this.formError = ''
+      if (p) {
+        this.pricingForm = { ...p }
+        this.pricingFeaturesText = (p.features || []).join('\n')
+      } else {
+        this.pricingForm = { name: '', price_monthly: 0, price_yearly: 0, is_popular: false, is_active: true, sort_order: 0 }
+        this.pricingFeaturesText = ''
+      }
+      this.pricingModal = true
+    },
+
+    async savePricing() {
+      this.formLoading = true
+      this.formError = ''
+      const features = this.pricingFeaturesText.split('\n').map(s => s.trim()).filter(Boolean)
+      const body = { ...this.pricingForm, features }
+      try {
+        let res
+        if (this.pricingForm.id) {
+          res = await this.apiPut('/internal/pricing/' + this.pricingForm.id, body)
+        } else {
+          res = await this.apiPost('/internal/pricing', body)
+        }
+        if (!res) return
+        const json = await res.json()
+        if (!res.ok) { this.formError = json.message || 'Gagal menyimpan'; return }
+        this.pricingModal = false
+        this.showToast(this.pricingForm.id ? 'Paket diupdate' : 'Paket ditambahkan')
+        this.loadPricing()
+      } catch (e) {
+        this.formError = 'Koneksi gagal'
+      } finally {
+        this.formLoading = false
+      }
+    },
+
+    async deletePricing(id) {
+      if (!confirm('Hapus paket ini?')) return
+      try {
+        const res = await this.apiDelete('/internal/pricing/' + id)
+        if (!res) return
+        if (res.ok) {
+          this.showToast('Paket dihapus')
+          this.loadPricing()
+        } else {
+          this.showToast('Gagal menghapus', 'error')
+        }
+      } catch (e) {
+        this.showToast('Koneksi gagal', 'error')
+      }
+    },
+
+    // --- TESTIMONIALS ---
+    async loadTestimonials() {
+      this.loadingTestimonials = true
+      try {
+        const res = await this.apiGet('/internal/testimonials')
+        if (!res) return
+        const json = await res.json()
+        this.testimonialList = json.data || []
+      } catch (e) {
+        this.showToast('Gagal memuat testimoni', 'error')
+      } finally {
+        this.loadingTestimonials = false
+      }
+    },
+
+    openTestimonialModal(t) {
+      this.formError = ''
+      if (t) {
+        this.testimonialForm = { ...t }
+      } else {
+        this.testimonialForm = { name: '', restaurant: '', quote: '', phone: '', rating: 5, sort_order: 0, is_active: true }
+      }
+      this.testimonialModal = true
+    },
+
+    async saveTestimonial() {
+      this.formLoading = true
+      this.formError = ''
+      const body = { ...this.testimonialForm }
+      if (!body.rating || body.rating < 1) body.rating = 5
+      try {
+        let res
+        if (this.testimonialForm.id) {
+          res = await this.apiPut('/internal/testimonials/' + this.testimonialForm.id, body)
+        } else {
+          res = await this.apiPost('/internal/testimonials', body)
+        }
+        if (!res) return
+        const json = await res.json()
+        if (!res.ok) { this.formError = json.message || 'Gagal menyimpan'; return }
+        this.testimonialModal = false
+        this.showToast(this.testimonialForm.id ? 'Testimoni diupdate' : 'Testimoni ditambahkan')
+        this.loadTestimonials()
+      } catch (e) {
+        this.formError = 'Koneksi gagal'
+      } finally {
+        this.formLoading = false
+      }
+    },
+
+    async deleteTestimonial(id) {
+      if (!confirm('Hapus testimoni ini?')) return
+      try {
+        const res = await this.apiDelete('/internal/testimonials/' + id)
+        if (!res) return
+        if (res.ok) {
+          this.showToast('Testimoni dihapus')
+          this.loadTestimonials()
+        } else {
+          this.showToast('Gagal menghapus', 'error')
+        }
+      } catch (e) {
+        this.showToast('Koneksi gagal', 'error')
+      }
+    },
+
+    // --- SETTINGS ---
+    async loadSettings() {
+      this.loadingSettings = true
+      try {
+        const res = await this.apiGet('/internal/settings')
+        if (!res) return
+        const json = await res.json()
+        this.settingList = json.data || []
+      } catch (e) {
+        this.showToast('Gagal memuat pengaturan', 'error')
+      } finally {
+        this.loadingSettings = false
+      }
+    },
+
+    async saveAllSettings() {
+      this.savingSettings = true
+      try {
+        const promises = this.settingList.map(s =>
+          this.apiPut('/internal/settings', { key: s.key, value: s.value })
+        )
+        await Promise.all(promises)
+        this.showToast('Semua pengaturan disimpan')
+      } catch (e) {
+        this.showToast('Gagal menyimpan pengaturan', 'error')
+      } finally {
+        this.savingSettings = false
+      }
+    },
+
+    settingLabel(key) {
+      const labels = {
+        hero_title: 'Judul Hero',
+        hero_subtitle: 'Subjudul Hero',
+        hero_cta: 'Tombol Hero',
+        hero_phone: 'WhatsApp Hero',
+        cta_title: 'Judul CTA',
+        cta_subtitle: 'Subjudul CTA',
+        cta_button: 'Tombol CTA',
+        footer_company: 'Nama Perusahaan',
+        footer_tagline: 'Tagline Footer',
+        footer_email: 'Email Footer',
+        footer_phone: 'Telepon Footer',
+        footer_address: 'Alamat Footer',
+      }
+      return labels[key] || ''
+    },
+
+    formatPrice(n) {
+      if (!n) return 'Gratis'
+      if (n >= 1000000) return (n / 1000000).toFixed(n % 1000000 === 0 ? 0 : 1) + ' jt'
+      if (n >= 1000) return Math.round(n / 1000) + ' rb'
+      return n.toString()
+    },
+  }
+}
+</script>
+</body>
+</html>
