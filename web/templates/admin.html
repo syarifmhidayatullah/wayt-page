@@ -133,6 +133,52 @@
         :class="toastType === 'error' ? 'bg-red-500/90 text-white' : 'bg-emerald-500/90 text-white'"
         x-text="toast"></div>
 
+      <!-- LEADS TAB -->
+      <div x-show="tab === 'leads'">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-lg font-semibold text-white">Leads</h2>
+            <p class="text-slate-400 text-xs mt-0.5" x-text="leadList.length + ' pendaftar'"></p>
+          </div>
+          <button @click="loadLeads()" class="text-slate-400 hover:text-white text-sm flex items-center gap-1.5 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Refresh
+          </button>
+        </div>
+
+        <div x-show="loadingLeads" class="text-center py-12 text-slate-400">Memuat...</div>
+
+        <div x-show="!loadingLeads && leadList.length === 0" class="text-center py-12 text-slate-500">
+          Belum ada pendaftar.
+        </div>
+
+        <div x-show="!loadingLeads && leadList.length > 0" class="space-y-3">
+          <template x-for="l in leadList" :key="l.id">
+            <div class="card-glass rounded-xl p-4">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm" x-text="l.full_name.charAt(0).toUpperCase()"></div>
+                <div class="flex-1 min-w-0 grid sm:grid-cols-2 gap-x-6 gap-y-1">
+                  <div>
+                    <p class="font-medium text-white text-sm" x-text="l.full_name"></p>
+                    <p class="text-slate-400 text-xs" x-text="l.restaurant_name"></p>
+                  </div>
+                  <div>
+                    <a :href="'mailto:' + l.email" class="text-cyan-400 text-xs hover:text-cyan-300" x-text="l.email"></a>
+                    <p x-show="l.phone" class="text-slate-400 text-xs mt-0.5" x-text="l.phone"></p>
+                  </div>
+                </div>
+                <div class="text-right flex-shrink-0">
+                  <p class="text-slate-500 text-xs" x-text="new Date(l.created_at).toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'})"></p>
+                  <button @click="deleteLead(l.id)" class="mt-2 px-2.5 py-1 rounded-lg text-xs btn-danger transition-colors">Hapus</button>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
       <!-- PRICING TAB -->
       <div x-show="tab === 'pricing'">
         <div class="flex items-center justify-between mb-6">
@@ -445,8 +491,9 @@ function admin() {
     loginError: '',
 
     // Navigation
-    tab: 'pricing',
+    tab: 'leads',
     tabs: [
+      { key: 'leads', label: 'Leads' },
       { key: 'pricing', label: 'Paket Harga' },
       { key: 'testimonials', label: 'Testimoni' },
       { key: 'settings', label: 'Pengaturan' },
@@ -456,6 +503,10 @@ function admin() {
     // Toast
     toast: '',
     toastType: 'success',
+
+    // Leads
+    leadList: [],
+    loadingLeads: false,
 
     // Admins
     adminList: [],
@@ -527,6 +578,7 @@ function admin() {
     },
 
     loadAll() {
+      this.loadLeads()
       this.loadPricing()
       this.loadTestimonials()
       this.loadSettings()
@@ -747,6 +799,37 @@ function admin() {
         footer_address: 'Alamat Footer',
       }
       return labels[key] || ''
+    },
+
+    // --- LEADS ---
+    async loadLeads() {
+      this.loadingLeads = true
+      try {
+        const res = await this.apiGet('/internal/leads')
+        if (!res) return
+        const json = await res.json()
+        this.leadList = json.data || []
+      } catch (e) {
+        this.showToast('Gagal memuat leads', 'error')
+      } finally {
+        this.loadingLeads = false
+      }
+    },
+
+    async deleteLead(id) {
+      if (!confirm('Hapus lead ini?')) return
+      try {
+        const res = await this.apiDelete('/internal/leads/' + id)
+        if (!res) return
+        if (res.ok) {
+          this.showToast('Lead dihapus')
+          this.loadLeads()
+        } else {
+          this.showToast('Gagal menghapus', 'error')
+        }
+      } catch (e) {
+        this.showToast('Koneksi gagal', 'error')
+      }
     },
 
     // --- ADMINS ---
