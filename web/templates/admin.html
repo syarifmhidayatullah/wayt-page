@@ -159,21 +159,21 @@
         <div x-show="!loadingLeads && leadList.length > 0" class="space-y-3">
           <template x-for="l in leadList" :key="l.id">
             <div class="card-glass rounded-xl p-4">
-              <div class="flex items-start gap-4">
+              <div class="flex items-start gap-3">
                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm" x-text="l.full_name.charAt(0).toUpperCase()"></div>
-                <div class="flex-1 min-w-0 grid sm:grid-cols-2 gap-x-6 gap-y-1">
-                  <div>
-                    <p class="font-medium text-slate-800 text-sm" x-text="l.full_name"></p>
-                    <p class="text-slate-500 text-xs" x-text="l.restaurant_name"></p>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-2">
+                    <div>
+                      <p class="font-medium text-slate-800 text-sm" x-text="l.full_name"></p>
+                      <p class="text-slate-500 text-xs mt-0.5" x-text="l.restaurant_name"></p>
+                    </div>
+                    <p class="text-slate-400 text-xs flex-shrink-0" x-text="new Date(l.created_at).toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'})"></p>
                   </div>
-                  <div>
-                    <a :href="'mailto:' + l.email" class="text-blue-600 text-xs hover:text-blue-700" x-text="l.email"></a>
-                    <p x-show="l.phone" class="text-slate-500 text-xs mt-0.5" x-text="l.phone"></p>
+                  <div class="mt-1.5 flex items-center gap-3 flex-wrap">
+                    <a :href="'mailto:' + l.email" class="text-blue-600 text-xs hover:text-blue-700 truncate" x-text="l.email"></a>
+                    <span x-show="l.phone" class="text-slate-500 text-xs" x-text="l.phone"></span>
+                    <button @click="deleteLead(l.id)" class="ml-auto px-2.5 py-1 rounded-lg text-xs btn-danger transition-colors">Hapus</button>
                   </div>
-                </div>
-                <div class="text-right flex-shrink-0">
-                  <p class="text-slate-500 text-xs" x-text="new Date(l.created_at).toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'})"></p>
-                  <button @click="deleteLead(l.id)" class="mt-2 px-2.5 py-1 rounded-lg text-xs btn-danger transition-colors">Hapus</button>
                 </div>
               </div>
             </div>
@@ -288,16 +288,20 @@
 
         <div x-show="!loadingTrusted" class="space-y-3">
           <template x-for="t in trustedList" :key="t.id">
-            <div class="card-glass rounded-xl p-4 flex items-center gap-4">
+            <div class="card-glass rounded-xl p-4 flex items-center gap-3">
               <span class="text-2xl flex-shrink-0" x-text="t.emoji"></span>
               <div class="flex-1 min-w-0">
-                <p class="font-medium text-slate-800 text-sm" x-text="t.name"></p>
-                <p class="text-yellow-400 text-xs mt-0.5" x-text="'★ ' + t.rating"></p>
-              </div>
-              <span class="text-xs px-2 py-0.5 rounded-full flex-shrink-0" :class="t.is_active ? 'badge-active' : 'badge-inactive'" x-text="t.is_active ? 'Tampil' : 'Tersembunyi'"></span>
-              <div class="flex gap-2 flex-shrink-0">
-                <button @click="openTrustedModal(t)" class="px-3 py-2 rounded-lg text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Edit</button>
-                <button @click="deleteTrusted(t.id)" class="px-3 py-2 rounded-lg text-xs btn-danger transition-colors">Hapus</button>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <p class="font-medium text-slate-800 text-sm" x-text="t.name"></p>
+                  <span class="text-xs px-2 py-0.5 rounded-full" :class="t.is_active ? 'badge-active' : 'badge-inactive'" x-text="t.is_active ? 'Tampil' : 'Tersembunyi'"></span>
+                </div>
+                <div class="flex items-center gap-3 mt-1">
+                  <p class="text-yellow-500 text-xs" x-text="'★ ' + t.rating"></p>
+                  <div class="flex gap-2 ml-auto">
+                    <button @click="openTrustedModal(t)" class="px-3 py-1.5 rounded-lg text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Edit</button>
+                    <button @click="deleteTrusted(t.id)" class="px-3 py-1.5 rounded-lg text-xs btn-danger transition-colors">Hapus</button>
+                  </div>
+                </div>
               </div>
             </div>
           </template>
@@ -318,13 +322,13 @@
 
         <div x-show="!loadingSettings" class="space-y-3">
           <template x-for="s in settingList" :key="s.id">
-            <div class="card-glass rounded-xl p-4 flex items-center gap-4">
-              <div class="min-w-0 flex-shrink-0 w-48">
-                <span class="text-xs font-mono text-green-600" x-text="s.key"></span>
-                <p class="text-xs text-slate-500 mt-0.5" x-text="settingLabel(s.key)"></p>
+            <div class="card-glass rounded-xl p-4">
+              <div class="mb-1.5">
+                <span class="text-xs font-mono font-semibold text-green-600" x-text="s.key"></span>
+                <span x-show="settingLabel(s.key)" class="text-xs text-slate-400 ml-2" x-text="'— ' + settingLabel(s.key)"></span>
               </div>
               <input x-model="s.value" type="text" :placeholder="'Nilai untuk ' + s.key"
-                class="input-dark flex-1 px-3 py-2 rounded-lg text-sm" />
+                class="input-dark w-full px-3 py-2 rounded-lg text-sm" />
             </div>
           </template>
         </div>
@@ -346,15 +350,15 @@
 
         <div x-show="!loadingAdmins" class="space-y-3">
           <template x-for="a in adminList" :key="a.id">
-            <div class="card-glass rounded-xl p-4 flex items-center gap-4">
+            <div class="card-glass rounded-xl p-4 flex items-center gap-3">
               <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm" x-text="a.username.charAt(0).toUpperCase()"></div>
               <div class="flex-1 min-w-0">
                 <p class="font-medium text-slate-800 text-sm" x-text="a.username"></p>
                 <p class="text-slate-500 text-xs" x-text="'Dibuat: ' + new Date(a.created_at).toLocaleDateString('id-ID')"></p>
-              </div>
-              <div class="flex gap-2">
-                <button @click="openAdminPassword(a)" class="px-3 py-2 rounded-lg text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Ganti Password</button>
-                <button @click="deleteAdmin(a.id)" class="px-3 py-2 rounded-lg text-xs btn-danger transition-colors">Hapus</button>
+                <div class="flex gap-2 mt-2">
+                  <button @click="openAdminPassword(a)" class="px-3 py-1.5 rounded-lg text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Ganti Password</button>
+                  <button @click="deleteAdmin(a.id)" class="px-3 py-1.5 rounded-lg text-xs btn-danger transition-colors">Hapus</button>
+                </div>
               </div>
             </div>
           </template>
