@@ -115,12 +115,12 @@
     </header>
 
     <!-- Tabs -->
-    <div class="border-b border-slate-200 bg-white sticky top-16 z-40">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 flex gap-1">
+    <div class="border-b border-slate-200 bg-white sticky top-16 z-40 overflow-x-auto">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 flex gap-1 min-w-max">
         <template x-for="t in tabs" :key="t.key">
           <button @click="tab = t.key"
             :class="tab === t.key ? 'tab-active' : 'tab-inactive'"
-            class="px-5 py-4 text-sm font-medium transition-all" x-text="t.label"></button>
+            class="px-4 py-3 text-sm font-medium transition-all whitespace-nowrap" x-text="t.label"></button>
         </template>
       </div>
     </div>
