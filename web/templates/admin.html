@@ -8,49 +8,51 @@
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <style>
     [x-cloak] { display: none !important; }
+    body { background: #f0f4ff; }
     .card-glass {
-      background: rgba(15, 23, 42, 0.7);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(99, 102, 241, 0.15);
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     }
     .input-dark {
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(99, 102, 241, 0.2);
-      color: #e2e8f0;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #1e293b;
       transition: border-color 0.2s;
     }
     .input-dark:focus {
       outline: none;
-      border-color: #10b981;
-      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
+      border-color: #22c55e;
+      box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.15);
     }
-    .input-dark::placeholder { color: #64748b; }
+    .input-dark::placeholder { color: #94a3b8; }
     .btn-primary {
-      background: linear-gradient(135deg, #10b981, #06b6d4);
+      background: #22c55e;
       color: white;
       font-weight: 600;
-      transition: opacity 0.2s, transform 0.1s;
+      transition: background 0.2s, transform 0.1s;
     }
-    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:hover { background: #16a34a; }
     .btn-primary:active { transform: scale(0.98); }
-    .btn-danger { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
-    .btn-danger:hover { background: rgba(239,68,68,0.25); }
+    .btn-danger { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; }
+    .btn-danger:hover { background: #fecaca; }
     .tab-active {
-      background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(6,182,212,0.2));
-      border-bottom: 2px solid #10b981;
-      color: #10b981;
+      border-bottom: 2px solid #22c55e;
+      color: #16a34a;
+      font-weight: 600;
     }
-    .tab-inactive { color: #94a3b8; border-bottom: 2px solid transparent; }
-    .tab-inactive:hover { color: #cbd5e1; }
-    .badge-active { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
-    .badge-inactive { background: rgba(100,116,139,0.15); color: #94a3b8; border: 1px solid rgba(100,116,139,0.3); }
-    .badge-popular { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+    .tab-inactive { color: #64748b; border-bottom: 2px solid transparent; }
+    .tab-inactive:hover { color: #22c55e; }
+    .badge-active { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+    .badge-inactive { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+    .badge-popular { background: #fef9c3; color: #ca8a04; border: 1px solid #fde68a; }
     ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    .nav-shadow { box-shadow: 0 1px 12px rgba(0,0,0,0.08); }
   </style>
 </head>
-<body class="h-full bg-slate-950 text-slate-200" x-data="admin()" x-init="init()" x-cloak>
+<body class="h-full text-slate-800" x-data="admin()" x-init="init()" x-cloak>
 
   <!-- Login -->
   <div x-show="!token" class="min-h-screen flex items-center justify-center px-4">
@@ -62,19 +64,19 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
             </svg>
           </div>
-          <span class="font-bold text-xl bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Wayt Admin</span>
+          <span class="font-bold text-xl text-slate-800">Wayt Admin</span>
         </div>
-        <p class="text-slate-400 text-sm">Masuk ke panel internal</p>
+        <p class="text-slate-500 text-sm">Masuk ke panel internal</p>
       </div>
       <form @submit.prevent="login()">
         <div class="space-y-4">
           <div>
-            <label class="block text-sm text-slate-400 mb-1">Username</label>
+            <label class="block text-sm text-slate-600 mb-1">Username</label>
             <input x-model="loginForm.username" type="text" placeholder="admin"
               class="input-dark w-full px-4 py-3 rounded-xl text-sm" autocomplete="username" />
           </div>
           <div>
-            <label class="block text-sm text-slate-400 mb-1">Password</label>
+            <label class="block text-sm text-slate-600 mb-1">Password</label>
             <input x-model="loginForm.password" type="password" placeholder="••••••••"
               class="input-dark w-full px-4 py-3 rounded-xl text-sm" autocomplete="current-password" />
           </div>
@@ -93,7 +95,7 @@
   <div x-show="token" class="min-h-screen flex flex-col">
 
     <!-- Top Nav -->
-    <header class="card-glass border-b border-slate-800/50 sticky top-0 z-50">
+    <header class="bg-white nav-shadow sticky top-0 z-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center">
@@ -101,9 +103,9 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
             </svg>
           </div>
-          <span class="font-semibold text-sm bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Wayt Admin</span>
+          <span class="font-semibold text-sm text-slate-800">Wayt Admin</span>
         </div>
-        <button @click="logout()" class="text-slate-400 hover:text-red-400 text-sm flex items-center gap-1.5 transition-colors">
+        <button @click="logout()" class="text-slate-500 hover:text-red-500 text-sm flex items-center gap-1.5 transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
           </svg>
@@ -113,7 +115,7 @@
     </header>
 
     <!-- Tabs -->
-    <div class="border-b border-slate-800/50 bg-slate-950/80 backdrop-blur sticky top-16 z-40">
+    <div class="border-b border-slate-200 bg-white sticky top-16 z-40">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 flex gap-1">
         <template x-for="t in tabs" :key="t.key">
           <button @click="tab = t.key"
@@ -137,10 +139,10 @@
       <div x-show="tab === 'leads'">
         <div class="flex items-center justify-between mb-6">
           <div>
-            <h2 class="text-lg font-semibold text-white">Leads</h2>
-            <p class="text-slate-400 text-xs mt-0.5" x-text="leadList.length + ' pendaftar'"></p>
+            <h2 class="text-lg font-semibold text-slate-800">Leads</h2>
+            <p class="text-slate-500 text-xs mt-0.5" x-text="leadList.length + ' pendaftar'"></p>
           </div>
-          <button @click="loadLeads()" class="text-slate-400 hover:text-white text-sm flex items-center gap-1.5 transition-colors">
+          <button @click="loadLeads()" class="text-slate-500 hover:text-green-600 text-sm flex items-center gap-1.5 transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
             </svg>
@@ -148,7 +150,7 @@
           </button>
         </div>
 
-        <div x-show="loadingLeads" class="text-center py-12 text-slate-400">Memuat...</div>
+        <div x-show="loadingLeads" class="text-center py-12 text-slate-500">Memuat...</div>
 
         <div x-show="!loadingLeads && leadList.length === 0" class="text-center py-12 text-slate-500">
           Belum ada pendaftar.
@@ -161,12 +163,12 @@
                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm" x-text="l.full_name.charAt(0).toUpperCase()"></div>
                 <div class="flex-1 min-w-0 grid sm:grid-cols-2 gap-x-6 gap-y-1">
                   <div>
-                    <p class="font-medium text-white text-sm" x-text="l.full_name"></p>
-                    <p class="text-slate-400 text-xs" x-text="l.restaurant_name"></p>
+                    <p class="font-medium text-slate-800 text-sm" x-text="l.full_name"></p>
+                    <p class="text-slate-500 text-xs" x-text="l.restaurant_name"></p>
                   </div>
                   <div>
-                    <a :href="'mailto:' + l.email" class="text-cyan-400 text-xs hover:text-cyan-300" x-text="l.email"></a>
-                    <p x-show="l.phone" class="text-slate-400 text-xs mt-0.5" x-text="l.phone"></p>
+                    <a :href="'mailto:' + l.email" class="text-blue-600 text-xs hover:text-blue-700" x-text="l.email"></a>
+                    <p x-show="l.phone" class="text-slate-500 text-xs mt-0.5" x-text="l.phone"></p>
                   </div>
                 </div>
                 <div class="text-right flex-shrink-0">
@@ -182,7 +184,7 @@
       <!-- PRICING TAB -->
       <div x-show="tab === 'pricing'">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-lg font-semibold text-white">Paket Harga</h2>
+          <h2 class="text-lg font-semibold text-slate-800">Paket Harga</h2>
           <button @click="openPricingModal(null)" class="btn-primary px-4 py-2 rounded-xl text-sm flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -191,16 +193,16 @@
           </button>
         </div>
 
-        <div x-show="loadingPricing" class="text-center py-12 text-slate-400">Memuat...</div>
+        <div x-show="loadingPricing" class="text-center py-12 text-slate-500">Memuat...</div>
 
         <div x-show="!loadingPricing" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <template x-for="p in pricingList" :key="p.id">
             <div class="card-glass rounded-2xl p-5">
               <div class="flex items-start justify-between mb-4">
                 <div>
-                  <h3 class="font-semibold text-white" x-text="p.name"></h3>
+                  <h3 class="font-semibold text-slate-800" x-text="p.name"></h3>
                   <p class="text-emerald-400 text-sm mt-0.5" x-text="formatPrice(p.price_monthly) + '/bln'"></p>
-                  <p class="text-slate-400 text-xs mt-0.5" x-text="formatPrice(p.price_yearly) + '/thn'"></p>
+                  <p class="text-slate-500 text-xs mt-0.5" x-text="formatPrice(p.price_yearly) + '/thn'"></p>
                 </div>
                 <div class="flex flex-col gap-1 items-end">
                   <span class="text-xs px-2 py-0.5 rounded-full" :class="p.is_active ? 'badge-active' : 'badge-inactive'" x-text="p.is_active ? 'Aktif' : 'Nonaktif'"></span>
@@ -209,7 +211,7 @@
               </div>
               <ul class="space-y-1.5 mb-4">
                 <template x-for="f in p.features" :key="f">
-                  <li class="flex items-start gap-2 text-sm text-slate-300">
+                  <li class="flex items-start gap-2 text-sm text-slate-600">
                     <svg class="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
@@ -217,8 +219,8 @@
                   </li>
                 </template>
               </ul>
-              <div class="flex gap-2 pt-3 border-t border-slate-700/50">
-                <button @click="openPricingModal(p)" class="flex-1 px-3 py-2 rounded-lg text-xs text-slate-300 bg-slate-800 hover:bg-slate-700 transition-colors">Edit</button>
+              <div class="flex gap-2 pt-3 border-t border-slate-100">
+                <button @click="openPricingModal(p)" class="flex-1 px-3 py-2 rounded-lg text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Edit</button>
                 <button @click="deletePricing(p.id)" class="px-3 py-2 rounded-lg text-xs btn-danger transition-colors">Hapus</button>
               </div>
             </div>
@@ -229,7 +231,7 @@
       <!-- TESTIMONIALS TAB -->
       <div x-show="tab === 'testimonials'">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-lg font-semibold text-white">Testimoni</h2>
+          <h2 class="text-lg font-semibold text-slate-800">Testimoni</h2>
           <button @click="openTestimonialModal(null)" class="btn-primary px-4 py-2 rounded-xl text-sm flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -238,7 +240,7 @@
           </button>
         </div>
 
-        <div x-show="loadingTestimonials" class="text-center py-12 text-slate-400">Memuat...</div>
+        <div x-show="loadingTestimonials" class="text-center py-12 text-slate-500">Memuat...</div>
 
         <div x-show="!loadingTestimonials" class="space-y-3">
           <template x-for="t in testimonialList" :key="t.id">
@@ -247,7 +249,7 @@
                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm" x-text="t.name.charAt(0)"></div>
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center gap-2 flex-wrap">
-                    <span class="font-medium text-white text-sm" x-text="t.name"></span>
+                    <span class="font-medium text-slate-800 text-sm" x-text="t.name"></span>
                     <span class="text-slate-500 text-xs" x-text="t.restaurant ? '· ' + t.restaurant : ''"></span>
                     <span class="text-xs px-2 py-0.5 rounded-full ml-auto" :class="t.is_active ? 'badge-active' : 'badge-inactive'" x-text="t.is_active ? 'Tampil' : 'Tersembunyi'"></span>
                   </div>
@@ -258,11 +260,11 @@
                       </svg>
                     </template>
                   </div>
-                  <p class="text-slate-300 text-sm leading-relaxed" x-text="'&ldquo;' + t.quote + '&rdquo;'"></p>
+                  <p class="text-slate-600 text-sm leading-relaxed" x-text="'&ldquo;' + t.quote + '&rdquo;'"></p>
                 </div>
               </div>
-              <div class="flex gap-2 mt-4 pt-3 border-t border-slate-700/50">
-                <button @click="openTestimonialModal(t)" class="flex-1 px-3 py-2 rounded-lg text-xs text-slate-300 bg-slate-800 hover:bg-slate-700 transition-colors">Edit</button>
+              <div class="flex gap-2 mt-4 pt-3 border-t border-slate-100">
+                <button @click="openTestimonialModal(t)" class="flex-1 px-3 py-2 rounded-lg text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Edit</button>
                 <button @click="deleteTestimonial(t.id)" class="px-3 py-2 rounded-lg text-xs btn-danger transition-colors">Hapus</button>
               </div>
             </div>
@@ -273,7 +275,7 @@
       <!-- TRUSTED TAB -->
       <div x-show="tab === 'trusted'">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-lg font-semibold text-white">Trusted By</h2>
+          <h2 class="text-lg font-semibold text-slate-800">Trusted By</h2>
           <button @click="openTrustedModal(null)" class="btn-primary px-4 py-2 rounded-xl text-sm flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -282,19 +284,19 @@
           </button>
         </div>
 
-        <div x-show="loadingTrusted" class="text-center py-12 text-slate-400">Memuat...</div>
+        <div x-show="loadingTrusted" class="text-center py-12 text-slate-500">Memuat...</div>
 
         <div x-show="!loadingTrusted" class="space-y-3">
           <template x-for="t in trustedList" :key="t.id">
             <div class="card-glass rounded-xl p-4 flex items-center gap-4">
               <span class="text-2xl flex-shrink-0" x-text="t.emoji"></span>
               <div class="flex-1 min-w-0">
-                <p class="font-medium text-white text-sm" x-text="t.name"></p>
+                <p class="font-medium text-slate-800 text-sm" x-text="t.name"></p>
                 <p class="text-yellow-400 text-xs mt-0.5" x-text="'★ ' + t.rating"></p>
               </div>
               <span class="text-xs px-2 py-0.5 rounded-full flex-shrink-0" :class="t.is_active ? 'badge-active' : 'badge-inactive'" x-text="t.is_active ? 'Tampil' : 'Tersembunyi'"></span>
               <div class="flex gap-2 flex-shrink-0">
-                <button @click="openTrustedModal(t)" class="px-3 py-2 rounded-lg text-xs text-slate-300 bg-slate-800 hover:bg-slate-700 transition-colors">Edit</button>
+                <button @click="openTrustedModal(t)" class="px-3 py-2 rounded-lg text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Edit</button>
                 <button @click="deleteTrusted(t.id)" class="px-3 py-2 rounded-lg text-xs btn-danger transition-colors">Hapus</button>
               </div>
             </div>
@@ -305,20 +307,20 @@
       <!-- SETTINGS TAB -->
       <div x-show="tab === 'settings'">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-lg font-semibold text-white">Pengaturan</h2>
+          <h2 class="text-lg font-semibold text-slate-800">Pengaturan</h2>
           <button @click="saveAllSettings()" :disabled="savingSettings" class="btn-primary px-4 py-2 rounded-xl text-sm disabled:opacity-60">
             <span x-show="!savingSettings">Simpan Semua</span>
             <span x-show="savingSettings">Menyimpan...</span>
           </button>
         </div>
 
-        <div x-show="loadingSettings" class="text-center py-12 text-slate-400">Memuat...</div>
+        <div x-show="loadingSettings" class="text-center py-12 text-slate-500">Memuat...</div>
 
         <div x-show="!loadingSettings" class="space-y-3">
           <template x-for="s in settingList" :key="s.id">
             <div class="card-glass rounded-xl p-4 flex items-center gap-4">
               <div class="min-w-0 flex-shrink-0 w-48">
-                <span class="text-xs font-mono text-cyan-400" x-text="s.key"></span>
+                <span class="text-xs font-mono text-green-600" x-text="s.key"></span>
                 <p class="text-xs text-slate-500 mt-0.5" x-text="settingLabel(s.key)"></p>
               </div>
               <input x-model="s.value" type="text" :placeholder="'Nilai untuk ' + s.key"
@@ -331,7 +333,7 @@
       <!-- ADMINS TAB -->
       <div x-show="tab === 'admins'">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-lg font-semibold text-white">Kelola Admin</h2>
+          <h2 class="text-lg font-semibold text-slate-800">Kelola Admin</h2>
           <button @click="openAdminCreate()" class="btn-primary px-4 py-2 rounded-xl text-sm flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -340,18 +342,18 @@
           </button>
         </div>
 
-        <div x-show="loadingAdmins" class="text-center py-12 text-slate-400">Memuat...</div>
+        <div x-show="loadingAdmins" class="text-center py-12 text-slate-500">Memuat...</div>
 
         <div x-show="!loadingAdmins" class="space-y-3">
           <template x-for="a in adminList" :key="a.id">
             <div class="card-glass rounded-xl p-4 flex items-center gap-4">
               <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm" x-text="a.username.charAt(0).toUpperCase()"></div>
               <div class="flex-1 min-w-0">
-                <p class="font-medium text-white text-sm" x-text="a.username"></p>
+                <p class="font-medium text-slate-800 text-sm" x-text="a.username"></p>
                 <p class="text-slate-500 text-xs" x-text="'Dibuat: ' + new Date(a.created_at).toLocaleDateString('id-ID')"></p>
               </div>
               <div class="flex gap-2">
-                <button @click="openAdminPassword(a)" class="px-3 py-2 rounded-lg text-xs text-slate-300 bg-slate-800 hover:bg-slate-700 transition-colors">Ganti Password</button>
+                <button @click="openAdminPassword(a)" class="px-3 py-2 rounded-lg text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Ganti Password</button>
                 <button @click="deleteAdmin(a.id)" class="px-3 py-2 rounded-lg text-xs btn-danger transition-colors">Hapus</button>
               </div>
             </div>
@@ -368,24 +370,24 @@
     @click.self="pricingModal = false">
     <div class="card-glass rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
       <div class="p-6">
-        <h3 class="font-semibold text-white mb-5" x-text="pricingForm.id ? 'Edit Paket' : 'Tambah Paket'"></h3>
+        <h3 class="font-semibold text-slate-800 mb-5" x-text="pricingForm.id ? 'Edit Paket' : 'Tambah Paket'"></h3>
         <form @submit.prevent="savePricing()" class="space-y-4">
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Nama Paket</label>
+            <label class="block text-xs text-slate-600 mb-1">Nama Paket</label>
             <input x-model="pricingForm.name" type="text" placeholder="Basic" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" required />
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs text-slate-400 mb-1">Harga Bulanan (Rp)</label>
+              <label class="block text-xs text-slate-600 mb-1">Harga Bulanan (Rp)</label>
               <input x-model.number="pricingForm.price_monthly" type="number" placeholder="199000" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
             </div>
             <div>
-              <label class="block text-xs text-slate-400 mb-1">Harga Tahunan (Rp)</label>
+              <label class="block text-xs text-slate-600 mb-1">Harga Tahunan (Rp)</label>
               <input x-model.number="pricingForm.price_yearly" type="number" placeholder="1990000" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
             </div>
           </div>
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Fitur (satu per baris)</label>
+            <label class="block text-xs text-slate-600 mb-1">Fitur (satu per baris)</label>
             <textarea x-model="pricingFeaturesText" rows="5" placeholder="Manajemen meja&#10;Booking online&#10;Laporan harian"
               class="input-dark w-full px-3 py-2.5 rounded-xl text-sm resize-none"></textarea>
           </div>
@@ -393,27 +395,27 @@
             <label class="flex items-center gap-3 cursor-pointer">
               <div class="relative">
                 <input x-model="pricingForm.is_popular" type="checkbox" class="sr-only" />
-                <div :class="pricingForm.is_popular ? 'bg-emerald-500' : 'bg-slate-700'" class="w-10 h-6 rounded-full transition-colors"></div>
+                <div :class="pricingForm.is_popular ? 'bg-emerald-500' : 'bg-slate-300'" class="w-10 h-6 rounded-full transition-colors"></div>
                 <div :class="pricingForm.is_popular ? 'translate-x-4' : 'translate-x-0'" class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform shadow"></div>
               </div>
-              <span class="text-sm text-slate-300">Popular</span>
+              <span class="text-sm text-slate-600">Popular</span>
             </label>
             <label x-show="pricingForm.id" class="flex items-center gap-3 cursor-pointer">
               <div class="relative">
                 <input x-model="pricingForm.is_active" type="checkbox" class="sr-only" />
-                <div :class="pricingForm.is_active ? 'bg-emerald-500' : 'bg-slate-700'" class="w-10 h-6 rounded-full transition-colors"></div>
+                <div :class="pricingForm.is_active ? 'bg-emerald-500' : 'bg-slate-300'" class="w-10 h-6 rounded-full transition-colors"></div>
                 <div :class="pricingForm.is_active ? 'translate-x-4' : 'translate-x-0'" class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform shadow"></div>
               </div>
-              <span class="text-sm text-slate-300">Aktif</span>
+              <span class="text-sm text-slate-600">Aktif</span>
             </label>
           </div>
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Urutan Tampil</label>
+            <label class="block text-xs text-slate-600 mb-1">Urutan Tampil</label>
             <input x-model.number="pricingForm.sort_order" type="number" placeholder="0" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
           </div>
           <div x-show="formError" class="text-red-400 text-sm" x-text="formError"></div>
           <div class="flex gap-3 pt-2">
-            <button type="button" @click="pricingModal = false" class="flex-1 py-2.5 rounded-xl text-sm text-slate-400 bg-slate-800 hover:bg-slate-700 transition-colors">Batal</button>
+            <button type="button" @click="pricingModal = false" class="flex-1 py-2.5 rounded-xl text-sm text-slate-500 bg-slate-100 hover:bg-slate-200 transition-colors">Batal</button>
             <button type="submit" :disabled="formLoading" class="flex-1 btn-primary py-2.5 rounded-xl text-sm disabled:opacity-60">
               <span x-show="!formLoading">Simpan</span>
               <span x-show="formLoading">Menyimpan...</span>
@@ -430,50 +432,50 @@
     @click.self="testimonialModal = false">
     <div class="card-glass rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
       <div class="p-6">
-        <h3 class="font-semibold text-white mb-5" x-text="testimonialForm.id ? 'Edit Testimoni' : 'Tambah Testimoni'"></h3>
+        <h3 class="font-semibold text-slate-800 mb-5" x-text="testimonialForm.id ? 'Edit Testimoni' : 'Tambah Testimoni'"></h3>
         <form @submit.prevent="saveTestimonial()" class="space-y-4">
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs text-slate-400 mb-1">Nama</label>
+              <label class="block text-xs text-slate-600 mb-1">Nama</label>
               <input x-model="testimonialForm.name" type="text" placeholder="Andi Susanto" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" required />
             </div>
             <div>
-              <label class="block text-xs text-slate-400 mb-1">Restoran</label>
+              <label class="block text-xs text-slate-600 mb-1">Restoran</label>
               <input x-model="testimonialForm.restaurant" type="text" placeholder="Warung Makan ABC" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
             </div>
           </div>
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Kutipan</label>
+            <label class="block text-xs text-slate-600 mb-1">Kutipan</label>
             <textarea x-model="testimonialForm.quote" rows="3" placeholder="Aplikasinya sangat membantu..."
               class="input-dark w-full px-3 py-2.5 rounded-xl text-sm resize-none" required></textarea>
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs text-slate-400 mb-1">No. HP (opsional)</label>
+              <label class="block text-xs text-slate-600 mb-1">No. HP (opsional)</label>
               <input x-model="testimonialForm.phone" type="text" placeholder="08123..." class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
             </div>
             <div>
-              <label class="block text-xs text-slate-400 mb-1">Rating (1–5)</label>
+              <label class="block text-xs text-slate-600 mb-1">Rating (1–5)</label>
               <input x-model.number="testimonialForm.rating" type="number" min="1" max="5" placeholder="5" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
             </div>
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs text-slate-400 mb-1">Urutan Tampil</label>
+              <label class="block text-xs text-slate-600 mb-1">Urutan Tampil</label>
               <input x-model.number="testimonialForm.sort_order" type="number" placeholder="0" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
             </div>
             <label x-show="testimonialForm.id" class="flex items-center gap-3 cursor-pointer mt-5">
               <div class="relative">
                 <input x-model="testimonialForm.is_active" type="checkbox" class="sr-only" />
-                <div :class="testimonialForm.is_active ? 'bg-emerald-500' : 'bg-slate-700'" class="w-10 h-6 rounded-full transition-colors"></div>
+                <div :class="testimonialForm.is_active ? 'bg-emerald-500' : 'bg-slate-300'" class="w-10 h-6 rounded-full transition-colors"></div>
                 <div :class="testimonialForm.is_active ? 'translate-x-4' : 'translate-x-0'" class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform shadow"></div>
               </div>
-              <span class="text-sm text-slate-300">Tampilkan</span>
+              <span class="text-sm text-slate-600">Tampilkan</span>
             </label>
           </div>
           <div x-show="formError" class="text-red-400 text-sm" x-text="formError"></div>
           <div class="flex gap-3 pt-2">
-            <button type="button" @click="testimonialModal = false" class="flex-1 py-2.5 rounded-xl text-sm text-slate-400 bg-slate-800 hover:bg-slate-700 transition-colors">Batal</button>
+            <button type="button" @click="testimonialModal = false" class="flex-1 py-2.5 rounded-xl text-sm text-slate-500 bg-slate-100 hover:bg-slate-200 transition-colors">Batal</button>
             <button type="submit" :disabled="formLoading" class="flex-1 btn-primary py-2.5 rounded-xl text-sm disabled:opacity-60">
               <span x-show="!formLoading">Simpan</span>
               <span x-show="formLoading">Menyimpan...</span>
@@ -490,39 +492,39 @@
     @click.self="trustedModal = false">
     <div class="card-glass rounded-2xl w-full max-w-sm">
       <div class="p-6">
-        <h3 class="font-semibold text-white mb-5" x-text="trustedForm.id ? 'Edit Restoran' : 'Tambah Restoran'"></h3>
+        <h3 class="font-semibold text-slate-800 mb-5" x-text="trustedForm.id ? 'Edit Restoran' : 'Tambah Restoran'"></h3>
         <form @submit.prevent="saveTrusted()" class="space-y-4">
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Nama Restoran</label>
+            <label class="block text-xs text-slate-600 mb-1">Nama Restoran</label>
             <input x-model="trustedForm.name" type="text" placeholder="Sushi House" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" required />
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs text-slate-400 mb-1">Emoji</label>
+              <label class="block text-xs text-slate-600 mb-1">Emoji</label>
               <input x-model="trustedForm.emoji" type="text" placeholder="🍽️" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
             </div>
             <div>
-              <label class="block text-xs text-slate-400 mb-1">Rating</label>
+              <label class="block text-xs text-slate-600 mb-1">Rating</label>
               <input x-model="trustedForm.rating" type="text" placeholder="4.9" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
             </div>
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs text-slate-400 mb-1">Urutan Tampil</label>
+              <label class="block text-xs text-slate-600 mb-1">Urutan Tampil</label>
               <input x-model.number="trustedForm.sort_order" type="number" placeholder="0" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" />
             </div>
             <label x-show="trustedForm.id" class="flex items-center gap-3 cursor-pointer mt-5">
               <div class="relative">
                 <input x-model="trustedForm.is_active" type="checkbox" class="sr-only" />
-                <div :class="trustedForm.is_active ? 'bg-emerald-500' : 'bg-slate-700'" class="w-10 h-6 rounded-full transition-colors"></div>
+                <div :class="trustedForm.is_active ? 'bg-emerald-500' : 'bg-slate-300'" class="w-10 h-6 rounded-full transition-colors"></div>
                 <div :class="trustedForm.is_active ? 'translate-x-4' : 'translate-x-0'" class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform shadow"></div>
               </div>
-              <span class="text-sm text-slate-300">Tampilkan</span>
+              <span class="text-sm text-slate-600">Tampilkan</span>
             </label>
           </div>
           <div x-show="formError" class="text-red-400 text-sm" x-text="formError"></div>
           <div class="flex gap-3 pt-2">
-            <button type="button" @click="trustedModal = false" class="flex-1 py-2.5 rounded-xl text-sm text-slate-400 bg-slate-800 hover:bg-slate-700 transition-colors">Batal</button>
+            <button type="button" @click="trustedModal = false" class="flex-1 py-2.5 rounded-xl text-sm text-slate-500 bg-slate-100 hover:bg-slate-200 transition-colors">Batal</button>
             <button type="submit" :disabled="formLoading" class="flex-1 btn-primary py-2.5 rounded-xl text-sm disabled:opacity-60">
               <span x-show="!formLoading">Simpan</span>
               <span x-show="formLoading">Menyimpan...</span>
@@ -539,19 +541,19 @@
     @click.self="adminModal = false">
     <div class="card-glass rounded-2xl w-full max-w-sm">
       <div class="p-6">
-        <h3 class="font-semibold text-white mb-5" x-text="adminMode === 'create' ? 'Tambah Admin' : 'Ganti Password — ' + adminForm.username"></h3>
+        <h3 class="font-semibold text-slate-800 mb-5" x-text="adminMode === 'create' ? 'Tambah Admin' : 'Ganti Password — ' + adminForm.username"></h3>
         <form @submit.prevent="saveAdmin()" class="space-y-4">
           <div x-show="adminMode === 'create'">
-            <label class="block text-xs text-slate-400 mb-1">Username</label>
+            <label class="block text-xs text-slate-600 mb-1">Username</label>
             <input x-model="adminForm.username" type="text" placeholder="admin2" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" :required="adminMode === 'create'" />
           </div>
           <div>
-            <label class="block text-xs text-slate-400 mb-1" x-text="adminMode === 'create' ? 'Password' : 'Password Baru'"></label>
+            <label class="block text-xs text-slate-600 mb-1" x-text="adminMode === 'create' ? 'Password' : 'Password Baru'"></label>
             <input x-model="adminForm.password" type="password" placeholder="••••••••" class="input-dark w-full px-3 py-2.5 rounded-xl text-sm" required />
           </div>
           <div x-show="formError" class="text-red-400 text-sm" x-text="formError"></div>
           <div class="flex gap-3 pt-2">
-            <button type="button" @click="adminModal = false" class="flex-1 py-2.5 rounded-xl text-sm text-slate-400 bg-slate-800 hover:bg-slate-700 transition-colors">Batal</button>
+            <button type="button" @click="adminModal = false" class="flex-1 py-2.5 rounded-xl text-sm text-slate-500 bg-slate-100 hover:bg-slate-200 transition-colors">Batal</button>
             <button type="submit" :disabled="formLoading" class="flex-1 btn-primary py-2.5 rounded-xl text-sm disabled:opacity-60">
               <span x-show="!formLoading">Simpan</span>
               <span x-show="formLoading">Menyimpan...</span>
