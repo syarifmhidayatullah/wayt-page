@@ -70,8 +70,8 @@
     </a>
     <div class="hidden md:flex items-center gap-8 text-sm text-slate-600">
       <a href="#features" :class="activeSection==='features' ? 'text-green-600 font-medium border-b-2 border-green-500 pb-0.5' : 'hover:text-green-600'" class="transition">Features</a>
-      <a href="#pricing" :class="activeSection==='pricing' ? 'text-green-600 font-medium border-b-2 border-green-500 pb-0.5' : 'hover:text-green-600'" class="transition">Pricing</a>
       <a href="#how-it-works" :class="activeSection==='how-it-works' ? 'text-green-600 font-medium border-b-2 border-green-500 pb-0.5' : 'hover:text-green-600'" class="transition">How it Works</a>
+      <a href="#pricing" :class="activeSection==='pricing' ? 'text-green-600 font-medium border-b-2 border-green-500 pb-0.5' : 'hover:text-green-600'" class="transition">Pricing</a>
       <a href="#contact" :class="activeSection==='contact' ? 'text-green-600 font-medium border-b-2 border-green-500 pb-0.5' : 'hover:text-green-600'" class="transition">Contact</a>
     </div>
     <a href="#get-started" class="btn-blue text-sm px-5 py-2.5 rounded-xl shadow-sm">Get Started</a>
@@ -512,16 +512,24 @@ function page() {
     },
 
     initScrollSpy() {
-      const sections = ['features', 'pricing', 'how-it-works', 'contact']
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) this.activeSection = entry.target.id
+      const ids = ['features', 'how-it-works', 'pricing', 'contact']
+      const onScroll = () => {
+        const scrollBottom = window.scrollY + window.innerHeight
+        const docHeight = document.documentElement.scrollHeight
+        if (scrollBottom >= docHeight - 80) {
+          this.activeSection = 'contact'
+          return
+        }
+        const mid = window.scrollY + window.innerHeight * 0.4
+        let current = ''
+        ids.forEach(id => {
+          const el = document.getElementById(id)
+          if (el && el.offsetTop <= mid) current = id
         })
-      }, { rootMargin: '-40% 0px -50% 0px', threshold: 0 })
-      sections.forEach(id => {
-        const el = document.getElementById(id)
-        if (el) observer.observe(el)
-      })
+        this.activeSection = current
+      }
+      window.addEventListener('scroll', onScroll, { passive: true })
+      onScroll()
     },
 
     async loadPricing() {
