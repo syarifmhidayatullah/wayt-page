@@ -65,6 +65,7 @@ func main() {
 
 	r := gin.Default()
 	r.LoadHTMLGlob("web/templates/*")
+	r.Static("/static", "./web/static")
 
 	// Pages
 	r.GET("/", func(c *gin.Context) { c.HTML(200, "index.html", nil) })
